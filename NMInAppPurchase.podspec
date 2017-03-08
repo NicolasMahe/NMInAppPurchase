@@ -17,6 +17,6 @@ Manage In App Purchase with ease. Verify Receipt for Subscription
 
   s.frameworks = 'UIKit', 'StoreKit'
 
-  s.dependency 'SwiftyStoreKit', '~> 0.6.1'
+  s.dependency 'SwiftyStoreKit', '~> 0.8.2'
   s.dependency 'NMLocalize'
 end

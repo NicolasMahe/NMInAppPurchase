@@ -1,9 +1,9 @@
 PODS:
   - NMInAppPurchase (0.0.1):
     - NMLocalize
-    - SwiftyStoreKit (~> 0.6.1)
+    - SwiftyStoreKit (~> 0.6)
   - NMLocalize (0.0.5)
-  - SwiftyStoreKit (0.6.1)
+  - SwiftyStoreKit (0.8.2)
 
 DEPENDENCIES:
   - NMInAppPurchase (from `../`)
@@ -13,9 +13,9 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  NMInAppPurchase: 8306771ca05cec69e17fbfaac918561936d98358
+  NMInAppPurchase: 50e0805b440d8691654cfd572caeadbe74dcc304
   NMLocalize: b1c438b13a57ca905ed95df00c567e2ed1e36662
-  SwiftyStoreKit: 956408606f43ec3df3386b56e65615bb19bee85e
+  SwiftyStoreKit: 901059a0058e808a2a3b36c3a6de886e4c6f8f6e
 
 PODFILE CHECKSUM: 7594a02c901a4becc109f4257f3160c77616af94
 

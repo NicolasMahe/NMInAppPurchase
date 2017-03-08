@@ -11,6 +11,7 @@ import SwiftyStoreKit
 import StoreKit
 import NMLocalize
 
+//@todo: add to README.md the Localized string
 //@TODO: add a NMInAppPurchasePremiumable protocol. So a User class can be generic with the protocol and the setNewLastExpirationDate also
 
 public class NMInAppPurchase: NSObject {
@@ -20,17 +21,20 @@ public class NMInAppPurchase: NSObject {
     var group: String
     var sharedSecret: String
     var setNewLastExpirationDate: (Date?) -> Void
+    var isProduction: Bool
     
     public init(
       availablePurchase: [String],
       group: String,
       sharedSecret: String,
+      isProduction: Bool,
       setNewLastExpirationDate: @escaping (Date?) -> Void
     ) {
       self.availablePurchase = availablePurchase
       self.group = group
       self.sharedSecret = sharedSecret
       self.setNewLastExpirationDate = setNewLastExpirationDate
+      self.isProduction = isProduction
     }
   }
   
@@ -38,6 +42,7 @@ public class NMInAppPurchase: NSObject {
     availablePurchase: [String](),
     group: "",
     sharedSecret: "",
+    isProduction: false,
     setNewLastExpirationDate: { (lastExpirationDate: Date?) -> Void in
       print("setNewLastExpirationDate is not implemented")
     }
@@ -124,9 +129,9 @@ public class NMInAppPurchase: NSObject {
    */
   public class func restore(
     success: ((_ message: String, _ productIds: [Product]) -> Void)? = nil,
-    error: ((_ message: String, _ reason: [(Error, String?)]?) -> Void)? = nil
+    error: ((_ message: String, _ reason: [(SKError, String?)]?) -> Void)? = nil
   ) {
-    SwiftyStoreKit.restorePurchases() { results in
+    SwiftyStoreKit.restorePurchases() { (results: RestoreResults) in
       if results.restoreFailedProducts.count > 0 {
         error?(
           L("iap.restore.failed"),
@@ -155,16 +160,16 @@ public class NMInAppPurchase: NSObject {
   public class func purchase(
     productId: String,
     success: ((_ productId: Product) -> Void)? = nil,
-    error: ((_ message: String, _ error: PurchaseError) -> Void)? = nil,
+    error: ((_ message: String, _ error: SKError) -> Void)? = nil,
     cancel: ((_ error: SKError) -> Void)? = nil
   ) {
-    guard self.config.availablePurchase.contains(productId) else {
-      error?(
-        "Product id is not valid",
-        PurchaseError.invalidProductId(productId: productId)
-      )
-      return
-    }
+//    guard self.config.availablePurchase.contains(productId) else {
+//      error?(
+//        "Product id is not valid",
+//        SKError.Code.storeProductNotAvailable//(productId: productId)
+//      )
+//      return
+//    }
     
     SwiftyStoreKit.purchaseProduct(productId) { (result: PurchaseResult) in
       switch result {
@@ -172,35 +177,29 @@ public class NMInAppPurchase: NSObject {
         success?(productId)
         self.verifyReceipt()
         
-      case .error(let errorV):
+      case .error(let errorSK):
         var message = L("iap.purchase.failed")
         
-        switch errorV {
-        case .failed(let error2):
-          let errorT = error2 as NSError
-          message = errorT.localizedDescription
-          
-          if let errorSK = error2 as? SKError {
-            switch errorSK.code {
-            case .paymentCancelled:
-              //user cancelled, do nothing
-              cancel?(errorSK)
-              return
-            default:
-              break
-            }
-          }
-          
-        case .invalidProductId(_)://(let productId):
-          message = L("iap.purchase.error.invalid")
-        case .noProductIdentifier:
-          message = L("iap.purchase.error.invalid.no_product_identifier")
-        case .paymentNotAllowed:
-          message = L("iap.purchase.error.payment_not_allowed")
+        let errorT = errorSK as NSError
+        message = errorT.localizedDescription
+
+        switch errorSK.code {
+//          case .unknown: break//print("Unknown error. Please contact support")
+//          case .clientInvalid: break//print("Not allowed to make the payment")
+          case .paymentCancelled:
+            cancel?(errorSK)
+            return
+//          case .paymentInvalid: message = L("iap.purchase.error.invalid")
+//          case .paymentNotAllowed: message = L("iap.purchase.error.payment_not_allowed")
+//          case .storeProductNotAvailable: break//print("The product is not available in the current storefront")
+//          case .cloudServicePermissionDenied: break//print("Access to cloud service information is not allowed")
+//          case .cloudServiceNetworkConnectionFailed: break//print("Could not connect to the network")
+          default: break
         }
+        
         error?(
           message,
-          errorV
+          errorSK
         )
       }
     }
@@ -225,7 +224,11 @@ public class NMInAppPurchase: NSObject {
     error: ((_ error: ReceiptError) -> Void)? = nil
   ) {
     
-    SwiftyStoreKit.verifyReceipt(password: self.config.sharedSecret) { (result) in
+    let appleValidator = AppleReceiptValidator(service: self.config.isProduction ? .production : .sandbox)
+    SwiftyStoreKit.verifyReceipt(
+      using: appleValidator,
+      password: self.config.sharedSecret
+    ) { (result: VerifyReceiptResult) in
       switch result {
         
       case .success(let receipt):
