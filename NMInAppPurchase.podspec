@@ -1,42 +1,22 @@
-#
-# Be sure to run `pod lib lint NMInAppPurchase.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
-
 Pod::Spec.new do |s|
   s.name             = 'NMInAppPurchase'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of NMInAppPurchase.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
+  s.version          = '0.0.1'
+  s.summary          = 'Manage In App Purchase with ease'
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+Manage In App Purchase with ease. Verify Receipt for Subscription
                        DESC
 
-  s.homepage         = 'https://github.com/nicolas@mahe.me/NMInAppPurchase'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.homepage         = 'https://github.com/NicolasMahe/NMInAppPurchase'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'nicolas@mahe.me' => 'nicolas@mahe.me' }
-  s.source           = { :git => 'https://github.com/nicolas@mahe.me/NMInAppPurchase.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => 'https://github.com/NicolasMahe/NMInAppPurchase.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
-  s.source_files = 'NMInAppPurchase/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'NMInAppPurchase' => ['NMInAppPurchase/Assets/*.png']
-  # }
+  s.source_files = 'NMInAppPurchase/**/*.swift'
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.frameworks = 'UIKit', 'StoreKit'
+
+  s.dependency 'SwiftyStoreKit', '~> 0.6.1'
+  s.dependency 'NMLocalize'
 end
