@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'NMInAppPurchase_Example' do
+  pod 'NMInAppPurchase', :path => '../'
+
+  target 'NMInAppPurchase_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
