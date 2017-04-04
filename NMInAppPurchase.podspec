@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NMInAppPurchase'
-  s.version          = '0.0.3'
+  s.version          = '0.0.4'
   s.summary          = 'Manage In App Purchase with ease'
   s.description      = <<-DESC
 Manage In App Purchase with ease. Verify Receipt for Subscription
