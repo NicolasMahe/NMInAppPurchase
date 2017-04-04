@@ -103,18 +103,18 @@ public class NMInAppPurchase: NSObject {
   public class func refreshIAPStatus() {
     
     SwiftyStoreKit.completeTransactions { (products: [Product]) -> Void in
-//      transactions
-//        .filter {
-//          return $0.transactionState == .Purchased || $0.transactionState == .Restored
-//        }
-//        .forEach { (trans) in
-//          print("purchased: \(trans.productId)")
-//          
-//          IAP.purchase(
-//            productId: trans.productId,
-//            forUser: User.authenticatedUser
-//          )
-//      }
+      products
+        .filter { (product: Product) in
+          return product.transaction.transactionState == .purchased
+            || product.transaction.transactionState == .restored
+        }
+        .filter { (product: Product) in
+          return product.needsFinishTransaction == true
+        }
+        .forEach { (product: Product) in
+          SwiftyStoreKit.finishTransaction(product.transaction)
+          print("finish transaction of product: \(product)")
+      }
       
       self.verifyReceipt()
     }
@@ -234,14 +234,15 @@ public class NMInAppPurchase: NSObject {
       case .success(let receipt):
         
         var premiumExpiration: Date?
-        let validUntil = Date()
+        let today = Date()
         
         //helper
         let verifyForProductId = { (productId: String) -> Void in
           let subscriptionResult = SwiftyStoreKit.verifySubscription(
             productId: productId,
+            type: .autoRenewable,
             inReceipt: receipt,
-            validUntil: validUntil
+            validUntil: today
           )
           switch subscriptionResult {
           case .purchased(let expiresDate):
