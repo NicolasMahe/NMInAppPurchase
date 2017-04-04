@@ -239,8 +239,8 @@ public class NMInAppPurchase: NSObject {
         //helper
         let verifyForProductId = { (productId: String) -> Void in
           let subscriptionResult = SwiftyStoreKit.verifySubscription(
-            productId: productId,
             type: .autoRenewable,
+            productId: productId,
             inReceipt: receipt,
             validUntil: today
           )
