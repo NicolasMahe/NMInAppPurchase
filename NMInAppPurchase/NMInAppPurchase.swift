@@ -174,8 +174,11 @@ public class NMInAppPurchase: NSObject {
     SwiftyStoreKit.purchaseProduct(productId) { (result: PurchaseResult) in
       switch result {
       case .success(let productId):
-        success?(productId)
-        self.verifyReceipt()
+        self.verifyReceipt(
+          completed: {
+            success?(productId)
+          }
+        )
         
       case .error(let errorSK):
         var message = L("iap.purchase.failed")
@@ -208,10 +211,11 @@ public class NMInAppPurchase: NSObject {
   /**
    Verify the that the user is premium on the receipt
    */
-  fileprivate class func verifyReceipt() {
+  fileprivate class func verifyReceipt(completed: (()->Void)? = nil) {
     self.getLastExpirationDateOnReceipt(
       success: { (lastExpirationDate: Date?) in
         self.config.setNewLastExpirationDate(lastExpirationDate)
+        completed?()
       }
     )
   }
